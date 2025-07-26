@@ -1,11 +1,4 @@
-import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import AppNavigator from '../navigation/AppNavigator';
+import { registerRootComponent } from 'expo';
+import App from './App';
 
-export default function IndexPage() {
-  return (
-    <NavigationContainer>
-      <AppNavigator />
-    </NavigationContainer>
-  );
-}
+registerRootComponent(App);
