@@ -1,5 +1,11 @@
-import DashboardScreen from '../screens/DashboardScreen';
+import React from 'react';
+import { NavigationContainer } from '@react-navigation/native';
+import AppNavigator from '../navigation/AppNavigator';
 
 export default function IndexPage() {
-  return <DashboardScreen />;
+  return (
+    <NavigationContainer>
+      <AppNavigator />
+    </NavigationContainer>
+  );
 }
