@@ -9,6 +9,7 @@ import {
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
+import { useNavigation } from '@react-navigation/native';
 import { currentUser, leaderboardUsers } from '../constants/mockUsers';
 
 // 阶段 0、1 用同一张图片；阶段 2 用满分图片
@@ -29,23 +30,34 @@ export default function LeaderboardScreen() {
   const [taskProgress, setTaskProgress] = useState(0);
   const [points, setPoints] = useState(currentUser.dailyPoints);
   const [cardH, setCardH] = useState(0); // 记录卡片实际高度以定位按钮
+  const navigation = useNavigation();
 
-  // 排行榜顶部选项卡
-  const [selectedTab, setSelectedTab] = useState('Day'); // 'Day' | 'Week' | 'All'
+  // 排行榜顶部选项卡，可在 Day/Week/All 间切换
+  const [selectedTab, setSelectedTab] = useState('Day');
 
   const isFull = taskProgress >= 2;
 
   const onPressComplete = () => {
-    if (isFull) return; // 已满，不再加分
-    setTaskProgress((p) => {
-      const next = Math.min(p + 1, 2);
-      setPoints((v) => v + 50);
-      return next;
-    });
+    if (!isFull) {
+      setTaskProgress((p) => {
+        const next = Math.min(p + 1, 2);
+        setPoints((v) => v + 50);
+        return next;
+      });
+    }
+    navigation.navigate('Tasks');
   };
 
-  // 这里暂时不根据 tab 过滤数据，只做点击高亮。
-  const listData = [currentUser, ...leaderboardUsers];
+  // 根据选中的时间范围切换分数和排名
+  const pointsField =
+    selectedTab === 'Day'
+      ? 'dailyPoints'
+      : selectedTab === 'Week'
+      ? 'weeklyPoints'
+      : 'totalPoints';
+  const listData = [currentUser, ...leaderboardUsers]
+    .slice(0, 10)
+    .sort((a, b) => (b[pointsField] || 0) - (a[pointsField] || 0));
 
   return (
     <ImageBackground
@@ -71,11 +83,14 @@ export default function LeaderboardScreen() {
 
             <View style={styles.badgeRow}>
               {/* 已移除左侧 Day 徽章，仅保留 Exchange */}
-              <View style={[styles.badge, styles.exchangeBadge]}>
+              <TouchableOpacity
+                onPress={() => navigation.navigate('Rewards')}
+                style={[styles.badge, styles.exchangeBadge]}
+              >
                 <Text style={[styles.badgeText, styles.exchangeBadgeText]}>
                   Exchange &gt;
                 </Text>
-              </View>
+              </TouchableOpacity>
             </View>
           </View>
         </View>
@@ -126,7 +141,7 @@ export default function LeaderboardScreen() {
           </View>
         </View>
 
-        {/* 排行列表（左侧头像 + 名字 + 分数） */}
+        {/* 排行列表（左侧排名 + 头像 + 名字 + 分数） */}
         <View style={styles.listContainer}>
           {listData.map((user, index) => {
             const avatarSource = user.avatarUrl
@@ -141,13 +156,14 @@ export default function LeaderboardScreen() {
                   user.username?.includes?.('(Myself)') && styles.highlightCard,
                 ]}
               >
+                <Text style={styles.rank}>{index + 1}</Text>
                 <Image source={avatarSource} style={styles.avatar} />
 
                 <Text style={styles.username} numberOfLines={1}>
                   {user.username || 'User'}
                 </Text>
 
-                <Text style={styles.points}>{user.points}</Text>
+                <Text style={styles.points}>{user[pointsField]}</Text>
               </View>
             );
           })}
@@ -306,6 +322,13 @@ const styles = StyleSheet.create({
     height: 36,
     borderRadius: 18,
     backgroundColor: '#e5e7eb', // 占位底色
+  },
+  rank: {
+    width: 24,
+    textAlign: 'center',
+    fontWeight: '700',
+    fontSize: 16,
+    color: '#111',
   },
   username: { flex: 1, fontSize: 16, color: '#111' },
   points: { fontSize: 16, fontWeight: '600', color: 'green' },
