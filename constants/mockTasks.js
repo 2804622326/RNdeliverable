@@ -1,0 +1,42 @@
+export const taskList = [
+  {
+    id: 1,
+    title: "Delay Your Laundry",
+    description: "Use your washing machine after 9pm today.",
+    points: 20,
+    completed: false,
+    icon: require('../assets/Task/t1.png'),
+  },
+  {
+    id: 2,
+    title: "Shorten Your Shower",
+    description: "Reduce shower time by at least 3 minutes.",
+    points: 15,
+    completed: false,
+    icon: require('../assets/Task/t2.png'),
+  },
+  {
+    id: 3,
+    title: "Unplug Idle Electronics",
+    description: "Unplug 3+ unused devices or chargers.",
+    points: 10,
+    completed: true,
+    icon: require('../assets/Task/t3.png'),
+  },
+    {
+    id: 4,
+    title: "Delay Your Laundry",
+    description: "Use your washing machine after 9pm today.",
+    points: 20,
+    completed: false,
+    icon: require('../assets/Task/t4.png'),
+  },
+    {
+    id: 5,
+    title: "Delay Your Laundry",
+    description: "Use your washing machine after 9pm today.",
+    points: 20,
+    completed: false,
+    icon: require('../assets/Task/t5.png'),
+  },
+];
