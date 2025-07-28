@@ -4,10 +4,12 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { Ionicons } from '@expo/vector-icons';
 
-import DashboardScreen from '../screens/DashboardScreen';
-import LeaderboardScreen from '../screens/LeaderboardScreen';
-import TasksScreen from '../screens/TasksScreen';
-import RewardsScreen from '../screens/RewardsScreen';
+// The screen components live in the `Screen` directory (capital S)
+// rather than `screens`, adjust the import paths accordingly.
+import DashboardScreen from '../Screen/DashboardScreen';
+import LeaderboardScreen from '../Screen/LeaderboardScreen';
+import TasksScreen from '../Screen/TasksScreen';
+import RewardsScreen from '../Screen/RewardsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createNativeStackNavigator();
