@@ -7,6 +7,7 @@ import {
   FlatList,
   Alert,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import RewardCard from '../components/RewardCard';
 import { rewardItems } from '../constants/mockRewards';
@@ -18,9 +19,19 @@ const RewardsScreen = () => {
   const handleExchange = (item) => {
     if (points >= item.costPoints) {
       deductPoints(item.costPoints);
-      Alert.alert('Success', `You have redeemed: ${item.name}`);
+      const msg = `You have redeemed: ${item.name}`;
+      if (Platform.OS === 'web') {
+        window.alert(`Success\n${msg}`);
+      } else {
+        Alert.alert('Success', msg);
+      }
     } else {
-      Alert.alert('Not Enough Points', 'You do not have enough points to redeem this item.');
+      const err = 'You do not have enough points to redeem this item.';
+      if (Platform.OS === 'web') {
+        window.alert(`Not Enough Points\n${err}`);
+      } else {
+        Alert.alert('Not Enough Points', err);
+      }
     }
   };
 
