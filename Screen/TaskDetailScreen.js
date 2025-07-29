@@ -9,11 +9,13 @@ export default function TaskDetailScreen() {
   const { addPoints, incrementProgress } = useContext(PointsContext);
 
   const task = route.params?.task || {};
+  const markComplete = route.params?.onComplete;
   const title = task.title || 'Task Detail';
   const description = task.description || '';
   const points = task.points || 0;
 
   const onComplete = () => {
+    markComplete?.();
     addPoints(points);
     incrementProgress();
     navigation.replace('TaskSuccess', { points });

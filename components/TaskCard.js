@@ -8,10 +8,11 @@ import { BlurView } from 'expo-blur';
 const DEFAULT_ICON = require('../assets/Lead/card1.png');
 
 export default function TaskCard({
-  task = {},              // 防止 undefined
+  task = {}, // 防止 undefined
   onComplete,
+  onPress,
   containerStyle,
-  glass = true,           // 是否启用毛玻璃
+  glass = true, // 是否启用毛玻璃
 }) {
   // 字段
   const title = task.title ?? task.name ?? task.heading ?? 'Task';
@@ -34,8 +35,14 @@ export default function TaskCard({
       <View style={styles.plain}>{children}</View>
     );
 
+  const Wrapper = onPress ? TouchableOpacity : View;
+
   return (
-    <View style={[styles.cardWrapper, containerStyle]}>
+    <Wrapper
+      style={[styles.cardWrapper, containerStyle]}
+      onPress={onPress}
+      activeOpacity={0.9}
+    >
       <CardShell>
         <View style={styles.row}>
           {/* 左侧图标 */}
@@ -71,7 +78,7 @@ export default function TaskCard({
           </View>
         </View>
       </CardShell>
-    </View>
+    </Wrapper>
   );
 }
 
