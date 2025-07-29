@@ -23,6 +23,7 @@ export default function DashboardScreen() {
   const [mode, setMode] = useState('home');    // 'home' 或 'community'
   const [stats, setStats] = useState(null);
   const animated = useRef(new Animated.Value(0)).current;
+  const isWeb = Platform.OS === 'web';
 
 const currentUserId = 1; // TODO: 替换为真实用户 ID
 
@@ -43,8 +44,30 @@ useEffect(() => {
     outputRange: ['180deg', '360deg'],
   });
 
+  const FrontCard = isWeb ? View : Animated.View;
+  const BackCard = isWeb ? View : Animated.View;
+
+  const BlurWrapper = ({ children }) =>
+    isWeb ? (
+      <View style={[styles.pillBlur, styles.webBlur]}>{children}</View>
+    ) : (
+      <BlurView
+        style={styles.pillBlur}
+        intensity={80}
+        tint="light"
+        experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : 'none'}
+        blurReductionFactor={4}
+      >
+        {children}
+      </BlurView>
+    );
+
   // 执行动画并切换模式
   const flipCard = () => {
+    if (isWeb) {
+      setMode(prev => (prev === 'home' ? 'community' : 'home'));
+      return;
+    }
     Animated.spring(animated, {
       toValue: mode === 'home' ? 180 : 0,
       friction: 8,
@@ -58,7 +81,7 @@ useEffect(() => {
   return (
     <ImageBackground
       source={require('../assets/HomeScreen/bg.png')}
-      style={styles.screenBg}
+      style={[styles.screenBg, isWeb && styles.screenBgWeb]}
       imageStyle={styles.screenBgImage}
     >
       <View style={styles.container}>
@@ -74,11 +97,11 @@ useEffect(() => {
       {/* 翻转卡片 */}
       <View style={styles.cardWrapper}>
         {/* 我的家（正面） */}
-        <Animated.View
+        <FrontCard
           style={[
             styles.innerCard,
-            { transform: [{ rotateY: frontInterpol }] },
-            mode === 'community' && { opacity: 0 }
+            !isWeb && { transform: [{ rotateY: frontInterpol }] },
+            mode === 'community' && { opacity: 0, display: isWeb ? 'none' : 'flex' }
           ]}
         >
           <ImageBackground
@@ -92,13 +115,7 @@ useEffect(() => {
             </Pressable>
             <View style={styles.statRow}>
               <View style={styles.pillBox}>
-                <BlurView
-                  style={styles.pillBlur}
-                  intensity={80}
-                  tint="light"
-                  experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : 'none'}
-                  blurReductionFactor={4}
-                >
+                <BlurWrapper>
                   <View style={styles.pillHeaderRow}>
                     <Image source={require('../assets/HomeScreen/lightning.png')} style={styles.pillIcon} />
                   </View>
@@ -107,16 +124,10 @@ useEffect(() => {
                     <Text style={styles.unitText}> kWh</Text>
                   </View>
                   <Text style={styles.pillCaption}>Used</Text>
-                </BlurView>
+                </BlurWrapper>
               </View>
               <View style={styles.pillBox}>
-                <BlurView
-                  style={styles.pillBlur}
-                  intensity={80}
-                  tint="light"
-                  experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : 'none'}
-                  blurReductionFactor={4}
-                >
+                <BlurWrapper>
                   <View style={styles.pillHeaderRow}>
                     <Image source={require('../assets/HomeScreen/star.png')} style={styles.pillIcon} />
                   </View>
@@ -125,18 +136,18 @@ useEffect(() => {
                     <Text style={styles.unitText}> pts</Text>
                   </View>
                   <Text style={styles.pillCaption}>Earned</Text>
-                </BlurView>
+                </BlurWrapper>
               </View>
             </View>
           </ImageBackground>
-        </Animated.View>
+        </FrontCard>
 
         {/* 社区（背面） */}
-        <Animated.View
+        <BackCard
           style={[
             styles.innerCard,
-            { transform: [{ rotateY: backInterpol }] },
-            mode === 'home' && { opacity: 0 }
+            !isWeb && { transform: [{ rotateY: backInterpol }] },
+            mode === 'home' && { opacity: 0, display: isWeb ? 'none' : 'flex' }
           ]}
         >
           <ImageBackground
@@ -150,13 +161,7 @@ useEffect(() => {
             </Pressable>
             <View style={styles.statRow}>
               <View style={styles.pillBox}>
-                <BlurView
-                  style={styles.pillBlur}
-                  intensity={80}
-                  tint="light"
-                  experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : 'none'}
-                  blurReductionFactor={4}
-                >
+                <BlurWrapper>
                   <View style={styles.pillHeaderRow}>
                     <Image source={require('../assets/HomeScreen/lightning.png')} style={styles.pillIcon} />
                   </View>
@@ -165,16 +170,10 @@ useEffect(() => {
                     <Text style={styles.unitText}> kWh</Text>
                   </View>
                   <Text style={styles.pillCaption}>Used</Text>
-                </BlurView>
+                </BlurWrapper>
               </View>
               <View style={styles.pillBox}>
-                <BlurView
-                  style={styles.pillBlur}
-                  intensity={80}
-                  tint="light"
-                  experimentalBlurMethod={Platform.OS === 'android' ? 'dimezisBlurView' : 'none'}
-                  blurReductionFactor={4}
-                >
+                <BlurWrapper>
                   <View style={styles.pillHeaderRow}>
                     <Image source={require('../assets/HomeScreen/star.png')} style={styles.pillIcon} />
                   </View>
@@ -183,11 +182,11 @@ useEffect(() => {
                     <Text style={styles.unitText}> pts</Text>
                   </View>
                   <Text style={styles.pillCaption}>Earned</Text>
-                </BlurView>
+                </BlurWrapper>
               </View>
             </View>
           </ImageBackground>
-        </Animated.View>
+        </BackCard>
       </View>
 
       {/* 挑战入口 */}
@@ -224,8 +223,14 @@ useEffect(() => {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, padding: 16, backgroundColor: 'transparent' },
+  container: {
+    flex: 1,
+    padding: 16,
+    backgroundColor: 'transparent',
+    ...(Platform.OS === 'web' && { width: '100%', maxWidth: 480, alignSelf: 'center' }),
+  },
   screenBg: { flex: 1 },
+  screenBgWeb: { width: '100%', height: '100%' },
   screenBgImage: { resizeMode: 'cover' },
   header: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
   location: { fontSize: 14 },
@@ -301,6 +306,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     paddingHorizontal: 16,
     justifyContent: 'center',
+  },
+  webBlur: {
+    backgroundColor: 'rgba(255,255,255,0.6)',
   },
   pillHeaderRow: {
     height: 28,
