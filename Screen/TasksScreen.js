@@ -32,6 +32,13 @@ export default function TasksScreen() {
     );
   };
 
+  const handlePressTask = (task, index) => {
+    navigation.navigate('TaskDetail', {
+      task,
+      onComplete: () => handleCompleteAt(index),
+    });
+  };
+
   // 过滤掉 undefined / null / 非对象
   const safeTasks = Array.isArray(tasks)
     ? tasks.filter((t) => t && typeof t === 'object')
@@ -69,6 +76,7 @@ export default function TasksScreen() {
               key={task.id ?? `idx-${index}`}
               task={task}
               onComplete={() => handleCompleteAt(index)}
+              onPress={() => handlePressTask(task, index)}
               containerStyle={styles.cardSpacing}
               glass={true}
             />
