@@ -1,6 +1,6 @@
 // components/TaskCard.js
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Image, Platform } from 'react-native';
 import { BlurView } from 'expo-blur';
 
 // 占位图（可换成你的）
@@ -13,6 +13,7 @@ export default function TaskCard({
   containerStyle,
   glass = true,           // 是否启用毛玻璃
 }) {
+  const isWeb = Platform.OS === 'web';
   // 字段
   const title = task.title ?? task.name ?? task.heading ?? 'Task';
   const description = task.description ?? task.desc ?? task.subtitle ?? '';
@@ -26,12 +27,12 @@ export default function TaskCard({
       : task.icon || DEFAULT_ICON;
 
   const CardShell = ({ children }) =>
-    glass ? (
+    glass && !isWeb ? (
       <BlurView intensity={35} tint="light" style={styles.blur}>
         <View style={styles.glassOverlay}>{children}</View>
       </BlurView>
     ) : (
-      <View style={styles.plain}>{children}</View>
+      <View style={[styles.plain, glass && styles.glassOverlay]}>{children}</View>
     );
 
   return (
@@ -104,6 +105,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#fff',
     borderRadius: RADIUS,
     padding: 12,
+    width: '100%',
   },
 
   row: {

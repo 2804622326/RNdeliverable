@@ -7,27 +7,39 @@ import {
   FlatList,
   Alert,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import RewardCard from '../components/RewardCard';
 import { rewardItems } from '../constants/mockRewards';
 import { PointsContext } from '../context/PointsContext';
 
 const RewardsScreen = () => {
+  const isWeb = Platform.OS === 'web';
   const { points, deductPoints } = useContext(PointsContext);
 
   const handleExchange = (item) => {
     if (points >= item.costPoints) {
       deductPoints(item.costPoints);
-      Alert.alert('Success', `You have redeemed: ${item.name}`);
+      const msg = `You have redeemed: ${item.name}`;
+      if (Platform.OS === 'web') {
+        window.alert(`Success\n${msg}`);
+      } else {
+        Alert.alert('Success', msg);
+      }
     } else {
-      Alert.alert('Not Enough Points', 'You do not have enough points to redeem this item.');
+      const err = 'You do not have enough points to redeem this item.';
+      if (Platform.OS === 'web') {
+        window.alert(`Not Enough Points\n${err}`);
+      } else {
+        Alert.alert('Not Enough Points', err);
+      }
     }
   };
 
   return (
     <ImageBackground
       source={require('../assets/Lead/bg.png')}
-      style={styles.bg}
+      style={[styles.bg, isWeb && styles.bgWeb]}
       imageStyle={styles.bgImg}
     >
       <View style={styles.container}>
@@ -51,12 +63,18 @@ const RewardsScreen = () => {
 
 const styles = StyleSheet.create({
   bg: { flex: 1 },
+  bgWeb: { width: '100%', height: '100%' },
   bgImg: { resizeMode: 'cover' },
 
   container: {
     flex: 1,
     backgroundColor: 'transparent',
     paddingTop: 40,
+    ...(Platform.OS === 'web' && {
+      width: '100%',
+      maxWidth: 480,
+      alignSelf: 'center',
+    }),
   },
   header: {
     fontSize: 24,
