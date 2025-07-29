@@ -1,5 +1,5 @@
 // LeaderboardScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { currentUser, leaderboardUsers } from '../constants/mockUsers';
+import { PointsContext } from '../context/PointsContext';
 
 // 阶段 0、1 用同一张图片；阶段 2 用满分图片
 const CARD_IMAGES = [
@@ -26,9 +27,8 @@ const DEFAULT_AVATAR = require('../assets/Lead/Head.png');
 const COMMUNITY_ICON = require('../assets/Lead/map-pin.png');
 
 export default function LeaderboardScreen() {
-  // 任务进度 0 -> 1 -> 2（满）
-  const [taskProgress, setTaskProgress] = useState(0);
-  const [points, setPoints] = useState(currentUser.dailyPoints);
+  // 来自全局上下文的积分与任务进度
+  const { points, taskProgress } = useContext(PointsContext);
   const [cardH, setCardH] = useState(0); // 记录卡片实际高度以定位按钮
   const navigation = useNavigation();
 
@@ -38,13 +38,6 @@ export default function LeaderboardScreen() {
   const isFull = taskProgress >= 2;
 
   const onPressComplete = () => {
-    if (!isFull) {
-      setTaskProgress((p) => {
-        const next = Math.min(p + 1, 2);
-        setPoints((v) => v + 50);
-        return next;
-      });
-    }
     navigation.navigate('Tasks');
   };
 

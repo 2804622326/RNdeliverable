@@ -1,5 +1,5 @@
 // RewardsScreen.js
-import React, { useState } from 'react';
+import React, { useContext } from 'react';
 import {
   View,
   Text,
@@ -10,13 +10,14 @@ import {
 } from 'react-native';
 import RewardCard from '../components/RewardCard';
 import { rewardItems } from '../constants/mockRewards';
+import { PointsContext } from '../context/PointsContext';
 
 const RewardsScreen = () => {
-  const [points, setPoints] = useState(500); // 可用积分（不再单独显示）
+  const { points, deductPoints } = useContext(PointsContext);
 
   const handleExchange = (item) => {
     if (points >= item.costPoints) {
-      setPoints((p) => p - item.costPoints);
+      deductPoints(item.costPoints);
       Alert.alert('Success', `You have redeemed: ${item.name}`);
     } else {
       Alert.alert('Not Enough Points', 'You do not have enough points to redeem this item.');

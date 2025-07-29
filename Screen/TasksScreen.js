@@ -1,5 +1,5 @@
 // TasksScreen.js
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import {
   View,
   Text,
@@ -11,15 +11,24 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { taskList } from '../constants/mockTasks';
 import TaskCard from '../components/TaskCard';
+import { PointsContext } from '../context/PointsContext';
 
 export default function TasksScreen() {
   const navigation = useNavigation();
   const [tasks, setTasks] = useState(taskList);
+  const { addPoints, incrementProgress } = useContext(PointsContext);
 
   // 按“索引”完成，避免重复 id 影响到多条
   const handleCompleteAt = (index) => {
     setTasks((prev) =>
-      prev.map((t, i) => (i === index ? { ...t, completed: true } : t))
+      prev.map((t, i) => {
+        if (i === index && !t.completed) {
+          addPoints(t.points || 0);
+          incrementProgress();
+          return { ...t, completed: true };
+        }
+        return t;
+      })
     );
   };
 
