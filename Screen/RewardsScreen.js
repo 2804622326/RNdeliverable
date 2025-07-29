@@ -17,10 +17,16 @@ const RewardsScreen = () => {
 
   const handleExchange = (item) => {
     if (points >= item.costPoints) {
+      // Sufficient points: deduct and show success message
+      const remaining = points - item.costPoints;
       deductPoints(item.costPoints);
-      Alert.alert('Success', `You have redeemed: ${item.name}`);
+      Alert.alert(
+        'Success',
+        `Successfully redeemed ${item.name}! You have ${remaining} points left.`
+      );
     } else {
-      Alert.alert('Not Enough Points', 'You do not have enough points to redeem this item.');
+      // Insufficient points warning
+      Alert.alert('Insufficient Points', 'You do not have enough points to redeem this reward.');
     }
   };
 

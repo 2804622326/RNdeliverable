@@ -13,7 +13,7 @@ const RewardCard = ({ item, onExchange }) => {
         }
       </View>
       <Text style={styles.name} numberOfLines={1} ellipsizeMode="tail">{item.name}</Text>
-      <Text style={styles.cost}>{item.costPoints} 积分</Text>
+      <Text style={styles.cost}>{item.costPoints} points</Text>
       <TouchableOpacity style={styles.button} onPress={onExchange}>
         <Text style={styles.buttonText}>Exchange</Text>
       </TouchableOpacity>
