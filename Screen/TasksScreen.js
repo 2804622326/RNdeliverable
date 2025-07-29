@@ -1,0 +1,133 @@
+// TasksScreen.js
+import React, { useState, useContext } from 'react';
+import {
+  View,
+  Text,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+  ImageBackground,
+} from 'react-native';
+import { useNavigation } from '@react-navigation/native';
+import { taskList } from '../constants/mockTasks';
+import TaskCard from '../components/TaskCard';
+import { PointsContext } from '../context/PointsContext';
+
+export default function TasksScreen() {
+  const navigation = useNavigation();
+  const [tasks, setTasks] = useState(taskList);
+  const { addPoints, incrementProgress } = useContext(PointsContext);
+
+  // 按“索引”完成，避免重复 id 影响到多条
+  const handleCompleteAt = (index) => {
+    setTasks((prev) =>
+      prev.map((t, i) => {
+        if (i === index && !t.completed) {
+          addPoints(t.points || 0);
+          incrementProgress();
+          return { ...t, completed: true };
+        }
+        return t;
+      })
+    );
+  };
+
+  // 过滤掉 undefined / null / 非对象
+  const safeTasks = Array.isArray(tasks)
+    ? tasks.filter((t) => t && typeof t === 'object')
+    : [];
+
+  return (
+    <ImageBackground
+      source={require('../assets/Lead/bg.png')}
+      style={styles.screenBg}
+      imageStyle={styles.screenBgImage}
+    >
+      <View style={styles.screen}>
+        {/* Header */}
+        <View style={styles.header}>
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
+            style={styles.backBtn}
+          >
+            <Text style={styles.backText}>‹</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.title}>Task List</Text>
+
+          <View style={styles.rightPlaceHolder} />
+        </View>
+
+        {/* List */}
+        <ScrollView
+          style={styles.container}
+          contentContainerStyle={{ paddingBottom: 32 }}
+        >
+          {safeTasks.map((task, index) => (
+            <TaskCard
+              key={task.id ?? `idx-${index}`}
+              task={task}
+              onComplete={() => handleCompleteAt(index)}
+              containerStyle={styles.cardSpacing}
+              glass={true}
+            />
+          ))}
+        </ScrollView>
+      </View>
+    </ImageBackground>
+  );
+}
+
+const styles = StyleSheet.create({
+  screenBg: { flex: 1 },
+  screenBgImage: { resizeMode: 'cover' },
+
+  screen: {
+    flex: 1,
+    backgroundColor: 'transparent',
+  },
+
+  /* header */
+  header: {
+    height: 56,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 16,
+  },
+  backBtn: {
+    position: 'absolute',
+    left: 16,
+    width: 40,
+    height: 40,
+    borderRadius: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  backText: {
+    fontSize: 28,
+    lineHeight: 28,
+    color: '#111',
+  },
+  title: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#111',
+  },
+  rightPlaceHolder: {
+    position: 'absolute',
+    right: 16,
+    width: 40,
+    height: 40,
+  },
+
+  container: {
+    flex: 1,
+    paddingHorizontal: 16,
+  },
+
+  cardSpacing: {
+    marginVertical: 10,
+  },
+});
