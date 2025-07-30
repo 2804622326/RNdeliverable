@@ -5,10 +5,8 @@ import {
   View,
   Text,
   StyleSheet,
-  TouchableOpacity,
   Pressable,
   Animated,
-  ActivityIndicator,
   Image,
   ImageBackground,
   Platform,
@@ -17,7 +15,8 @@ import {
 
 import { BlurView } from 'expo-blur';
 
-import { fetchEnergyStats } from '../service/api';
+// Temporarily use local mock data instead of calling the backend
+import { energyStats } from '../constants/mockStats';
 import { Images } from '../assets';
 
 export default function DashboardScreen() {
@@ -27,13 +26,9 @@ export default function DashboardScreen() {
   const isWeb = Platform.OS === 'web';
   const Container = isWeb ? ScrollView : View;
 
-const currentUserId = 1; // TODO: 替换为真实用户 ID
-
+// For demo purposes, switch stats based on the selected mode without API calls
 useEffect(() => {
-  setStats(null);
-  fetchEnergyStats(mode, currentUserId)
-    .then(data => setStats(data))
-    .catch(err => console.error(err));
+  setStats(energyStats[mode]);
 }, [mode]);
 
   // 翻转动画插值
