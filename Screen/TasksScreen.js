@@ -7,6 +7,7 @@ import {
   ScrollView,
   StyleSheet,
   ImageBackground,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { taskList } from '../constants/mockTasks';
@@ -43,7 +44,7 @@ export default function TasksScreen() {
   return (
     <ImageBackground
       source={require('../assets/Lead/bg.png')}
-      style={styles.screenBg}
+      style={[styles.screenBg, Platform.OS === 'web' && styles.screenBgWeb]}
       imageStyle={styles.screenBgImage}
     >
       <View style={styles.screen}>
@@ -84,11 +85,13 @@ export default function TasksScreen() {
 
 const styles = StyleSheet.create({
   screenBg: { flex: 1 },
+  screenBgWeb: { width: '100%', height: '100%' },
   screenBgImage: { resizeMode: 'cover' },
 
   screen: {
     flex: 1,
     backgroundColor: 'transparent',
+    ...(Platform.OS === 'web' && { width: '100%', maxWidth: 480, alignSelf: 'center' }),
   },
 
   /* header */
@@ -128,6 +131,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 16,
+    ...(Platform.OS === 'web' && { width: '100%', maxWidth: 480, alignSelf: 'center' }),
   },
 
   cardSpacing: {
