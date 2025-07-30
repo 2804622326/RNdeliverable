@@ -8,6 +8,7 @@ import {
   StyleSheet,
   TouchableOpacity,
   ScrollView,
+  Platform,
 } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { currentUser, leaderboardUsers } from '../constants/mockUsers';
@@ -55,7 +56,7 @@ export default function LeaderboardScreen() {
   return (
     <ImageBackground
       source={require('../assets/Lead/bg.png')}
-      style={styles.screenBg}
+      style={[styles.screenBg, Platform.OS === 'web' && styles.screenBgWeb]}
       imageStyle={styles.screenBgImage}
     >
       <ScrollView style={styles.container} contentContainerStyle={styles.content}>
@@ -176,11 +177,13 @@ const CARD_HEIGHT = 100; // 你的设计卡片高度；需要更高就调这里
 
 const styles = StyleSheet.create({
   screenBg: { flex: 1 },
+  screenBgWeb: { width: '100%', height: '100%' },
   screenBgImage: { resizeMode: 'cover' },
 
   container: {
     flex: 1,
     backgroundColor: 'transparent',
+    ...(Platform.OS === 'web' && { width: '100%', maxWidth: 480, alignSelf: 'center' }),
   },
   content: {
     padding: 20,
